@@ -38,6 +38,7 @@ class TestAtom(unittest.TestCase):
         self.assertEqual(str(atom), 'None', 'Failed on Atom(None)')
 
     def test_true_keyword(self):
+        atom = terms.Atom(True)
         self.assertEqual(str(atom), 'True', 'Failed on Atom(True)')
 
     def test_false_keyword(self):
