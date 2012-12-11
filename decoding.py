@@ -50,74 +50,93 @@ class ETFDecoder(object):
         offset = pos + 1
         return struct.unpack(format.INT8, data[pos:offset])[0]
 
+    @validate(tags.INTEGER)
     def decode_integer(self, data, pos):
         offset = pos + 4
         return struct.unpack(format.INT32, data[pos:offset])[0]
 
+    @validate(tags.FLOAT)
     def decode_float(self, data, pos):
         offset = pos + 4
         return struct.unpack(format.FLOAT, data[pos:offset])[0]
 
+    @validate(tags.ATOM)
     def decode_atom(self, data, pos):
         offset = pos + 2
         length = struct.unpack(format.UINT16, data[pos:offset])[0]
         return terms.Atom(data[offset:offset+length])
 
+    @validate(tags.REFERENCE)
     def decode_reference(self, data, pos):
         node, pos = self.decode_term(data, pos) #???
         offset = pos + 5
         id, creation = struct.unpack(format.ID_CREATION_PAIR, data[pos:offset])
         return terms.Reference(node, id, creation)
 
+    @validate(tags.SMALL_TUPLE)
     def decode_small_tuple(self, data, pos):
         offset = pos + 1
         arity = struct.unpack(format.INT8, data[pos:offset])[0]
         return self._decode_iterable(data[:offset], pos, arity, tuple)
 
+    @validate(tags.LARGE_TUPLE)
     def decode_large_tuple(self, data, pos):
         offset = pos + 4
         arity = struct.unpack(format.UINT32, data[pos:offset])[0]
         return self._decode_iterable(data[:offset], pos, arity, tuple)
 
+    @validate(tags.NIL)
     def decode_nil(self, data, pos):
         return [] # Can we return None here instead ??? TODO
 
+    @validate(tags.STRING)
     def decode_string(self, data, pos):
         offset = pos + 2
         length = struct.unpack(format.UINT16, data[pos:offset])[0]
         string = data[offset:offset+length]
         return [struct.unpack(format.INT8, c) for c in string]
 
+    @validate(tags.LIST)
     def decode_list(self, data, pos):
         pass
 
+    @validate(tags.BINARY)
     def decode_binary(self, data, pos):
         pass
 
+    @validate(tags.SMALL_BIG)
     def decode_small_big(self, data, pos):
         pass
 
+    @validate(tags.LARGE_BIG)
     def decode_large_big(self, data, pos):
         pass
 
+    @validate(tags.NEW_REFERENCE)
     def decode_new_reference(self, data, pos):
         pass
 
+    @validate(tags.SMALL_ATOM)
     def decode_small_atom(self, data, pos):
         pass
 
+    @validate(tags.FUN)
     def decode_fun(self, data, pos):
         pass
 
+    @validate(tags.NEW_FUN)
     def decode_new_fun(self, data, pos):
         pass
 
+    @validate(tags.EXPORT)
     def decode_export(self, data, pos):
         pass
 
+    @validate(tags.BIT_BINARY)
     def decode_bit_binary(self, data, pos):
         pass
 
+    @validate(tags.NEW_FLOAT)
     def decode_new_float(self, data, pos):
         pass
 
