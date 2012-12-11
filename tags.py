@@ -4,6 +4,8 @@ __author__ = 'ahawker'
 #|1  |1  |N   |
 #|131|Tag|Data|
 
+VERSION = 131
+
 NEW_FLOAT       = 70        #|1 |8         |
                             #|70|IEEE float|
                             #IEEE float: uint64 (IEEE format)

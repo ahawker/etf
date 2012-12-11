@@ -1,12 +1,26 @@
 __author__ = 'ahawker'
 
 import format
+import functools
 import struct
+import tags
 import terms
 import zlib
 
-class ETFEncodingError(Exception):
+class ETFDecodingError(Exception):
     pass
+
+def validate(expected_tag=None):
+    def decorator(decode):
+        @functools.wraps(decode)
+        def f(*args, **kwargs):
+            #args[1] is our data, args[1][0] is the tag byte, unpack returns tuple
+            tag = struct.unpack(format.INT8, args[1][0])[0]
+            if expected_tag and tag != expected_tag:
+                raise ETFDecodingError('{0} got tag {1} but expects {2}'.format(decode.__name__, tag, expected_tag))
+            return decode(*args, **kwargs)
+        return f
+    return decorator
 
 class ETFDecoder(object):
     def __init__(self, encoding='utf-8'):
@@ -26,6 +40,7 @@ class ETFDecoder(object):
         csize = offset + ucsize
         return zlib.decompress(data[offset:csize])
 
+    @validate(tags.SMALL_INTEGER)
     def decode_small_integer(self, data, pos):
         offset = pos + 1
         return struct.unpack(format.INT8, data[pos:offset])[0]
@@ -35,7 +50,8 @@ class ETFDecoder(object):
         return struct.unpack(format.INT32, data[pos:offset])[0]
 
     def decode_float(self, data, pos):
-        return struct.unpack(format.FLOAT, data[pos:pos+4])[0]
+        offset = pos + 4
+        return struct.unpack(format.FLOAT, data[pos:offset])[0]
 
     def decode_atom(self, data, pos):
         offset = pos + 2
@@ -64,7 +80,8 @@ class ETFDecoder(object):
     def decode_string(self, data, pos):
         offset = pos + 2
         length = struct.unpack(format.UINT16, data[pos:offset])[0]
-        return [struct.unpack(format.INT8, i) for i in data[offset:offset+length]]
+        string = data[offset:offset+length]
+        return [struct.unpack(format.INT8, c) for c in string]
 
     def decode_list(self, data, pos):
         pass
