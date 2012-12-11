@@ -14,6 +14,10 @@ def validate(expected_tag=None):
     def decorator(decode):
         @functools.wraps(decode)
         def f(*args, **kwargs):
+            if not args[1]: #data
+                raise ETFDecodingError('{0} expects data but got none'.format(decode.__name__))
+            if args[2] < 0: #pos
+                raise ValueError('{0} expects position >= zero'.format(decode.__name__))
             #args[1] is our data, args[1][0] is the tag byte, unpack returns tuple
             tag = struct.unpack(format.INT8, args[1][0])[0]
             if expected_tag and tag != expected_tag:
@@ -28,8 +32,9 @@ class ETFDecoder(object):
         self.encoding = encoding
 
     def decode(self, data):
-        version = ord(data[0])
-        #if compressed, uncompress
+        version = struct.unpack(format.INT8, data[0])
+        if version != tags.VERSION:
+            raise ETFDecodingError('Decode got version {0} but expects {1}'.format(version, tags.VERSION))
 
     def decode_term(self, data, pos):
         pass
