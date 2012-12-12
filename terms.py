@@ -1,11 +1,5 @@
-
-__all__ = []
-
 __author__ = 'ahawker'
-
-import format
-import struct
-import zlib
+__all__ = ['Atom', 'Reference', 'Port', 'Pid']
 
 class Atom(str):
     def __new__(cls, string):
