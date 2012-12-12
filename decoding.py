@@ -19,9 +19,10 @@ class ETFDecoder(object):
         self.handlers = dict(_generate_handlers())
 
     def decode(self, data):
-        version = struct.unpack(format.INT8, data[0])
+        version = struct.unpack(format.INT8, data[0])[0]
         if version != tags.VERSION:
             raise ETFDecodingError('Decode got version {0} but expects {1}'.format(version, tags.VERSION))
+        return True
 
     def decode_term(self, data, pos):
         pass
@@ -36,7 +37,7 @@ class ETFDecoder(object):
     @tags.tag(tags.SMALL_INTEGER)
     def decode_small_integer(self, data, pos):
         offset = pos + 1
-        return struct.unpack(format.INT8, data[offset:offset+1])[0]
+        return struct.unpack(format.INT8, data[pos:offset])[0]
 
     @tags.tag(tags.INTEGER)
     def decode_integer(self, data, pos):
