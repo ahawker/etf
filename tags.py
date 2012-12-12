@@ -39,8 +39,10 @@ def tag(tag):
             first_byte = struct.unpack(format.INT8, args[1][0])[0]
             if tag != first_byte:
                 raise ValueError('{0} got tag {1} but expects {2}'.format(func.__name__, first_byte, tag))
-            args[2] += 1 #valid tag, shift position
-            return func(*args, **kwargs)
+            pos = args[2]
+            if pos < 0:
+                raise ValueError('{0} expects non-negative position'.format(func.__name__))
+            return func(*(args[0], args[1], args[2]+1), **kwargs)
         f.tag = tag
         return f
     return decorator
