@@ -14,13 +14,6 @@ class Atom(str):
                 raise ValueError('Atom max length is 255')
             if string.lower() in ('true', 'false', 'none'):
                 return eval(string.capitalize())
-#            s = string.lower()
-#            if s == 'true':
-#                return True
-#            if s == 'false':
-#                return False
-#            if s == 'none':
-#                return None
         return super(Atom, cls).__new__(cls, string)
     def __init__(self, string):
         super(Atom, self).__init__(string)
