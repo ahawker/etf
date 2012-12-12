@@ -1,5 +1,5 @@
 # etf  
-etf is a module for supporting encoding/decoding of the [Erlang External Term Format](http://erlang.org/doc/apps/erts/erl_ext_dist.html) in Python.
+etf is a module for encoding/decoding of the [Erlang External Term Format](http://erlang.org/doc/apps/erts/erl_ext_dist.html) in Python.
 
 ## About  
 Even though there are already other libraries which support this functionality. See:
