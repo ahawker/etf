@@ -1,3 +1,4 @@
+import functools
 import format
 import struct
 import tags
@@ -5,6 +6,22 @@ import terms
 import zlib
 
 __author__ = 'ahawker'
+__all__ = ['ETFDecodingError', 'ETFDecoder']
+
+def tag(tag):
+    def decorator(func):
+        @functools.wraps(func)
+        def f(*args, **kwargs):
+            tbyte = struct.unpack(format.INT8, args[1][0])[0]
+            if tag != tbyte:
+                raise ValueError('{0} got tag {1} but expects {2}'.format(func.__name__, tbyte, tag))
+            pos = args[2]
+            if pos < 0:
+                raise ValueError('{0} expects non-negative position'.format(func.__name__))
+            return func(*(args[0], args[1], args[2]+1), **kwargs)
+        f.tag = tag
+        return f
+    return decorator
 
 class ETFDecodingError(Exception):
     pass
@@ -27,105 +44,105 @@ class ETFDecoder(object):
     def decode_term(self, data, pos=0):
         return self.handlers[data[pos]](data, pos)
 
-    @tags.tag(tags.COMPRESSED)
+    @tag(tags.COMPRESSED)
     def decode_compressed_term(self, data, pos):
         offset = pos + 4
         ucsize = struct.unpack(format.UINT32, data[pos:offset])[0]
         csize = offset + ucsize
         return self.decode_term(zlib.decompress(data[offset:csize]))
 
-    @tags.tag(tags.SMALL_INTEGER)
+    @tag(tags.SMALL_INTEGER)
     def decode_small_integer(self, data, pos):
         offset = pos + 1
         return struct.unpack(format.INT8, data[pos:offset])[0]
 
-    @tags.tag(tags.INTEGER)
+    @tag(tags.INTEGER)
     def decode_integer(self, data, pos):
         offset = pos + 4
         return struct.unpack(format.INT32, data[pos:offset])[0]
 
-    @tags.tag(tags.FLOAT)
+    @tag(tags.FLOAT)
     def decode_float(self, data, pos):
         offset = pos + 4
         return struct.unpack(format.FLOAT, data[pos:offset])[0]
 
-    @tags.tag(tags.ATOM)
+    @tag(tags.ATOM)
     def decode_atom(self, data, pos):
         offset = pos + 2
         length = struct.unpack(format.UINT16, data[pos:offset])[0]
         return terms.Atom(data[offset:offset+length])
 
-    @tags.tag(tags.REFERENCE)
+    @tag(tags.REFERENCE)
     def decode_reference(self, data, pos):
         node, pos = self.decode_term(data, pos) #???
         offset = pos + 5
         id, creation = struct.unpack(format.ID_CREATION_PAIR, data[pos:offset])
         return terms.Reference(node, id, creation)
 
-    @tags.tag(tags.SMALL_TUPLE)
+    @tag(tags.SMALL_TUPLE)
     def decode_small_tuple(self, data, pos):
         offset = pos + 1
         arity = struct.unpack(format.INT8, data[pos:offset])[0]
         return self._decode_iterable(data[:offset], pos, arity, tuple)
 
-    @tags.tag(tags.LARGE_TUPLE)
+    @tag(tags.LARGE_TUPLE)
     def decode_large_tuple(self, data, pos):
         offset = pos + 4
         arity = struct.unpack(format.UINT32, data[pos:offset])[0]
         return self._decode_iterable(data[:offset], pos, arity, tuple)
 
-    @tags.tag(tags.NIL)
+    @tag(tags.NIL)
     def decode_nil(self, data, pos):
         return [] # Can we return None here instead ??? TODO
 
-    @tags.tag(tags.STRING)
+    @tag(tags.STRING)
     def decode_string(self, data, pos):
         offset = pos + 2
         length = struct.unpack(format.UINT16, data[pos:offset])[0]
         string = data[offset:offset+length]
         return [struct.unpack(format.INT8, c) for c in string]
 
-    @tags.tag(tags.LIST)
+    @tag(tags.LIST)
     def decode_list(self, data, pos):
         pass
 
-    @tags.tag(tags.BINARY)
+    @tag(tags.BINARY)
     def decode_binary(self, data, pos):
         pass
 
-    @tags.tag(tags.SMALL_BIG)
+    @tag(tags.SMALL_BIG)
     def decode_small_big(self, data, pos):
         pass
 
-    @tags.tag(tags.LARGE_BIG)
+    @tag(tags.LARGE_BIG)
     def decode_large_big(self, data, pos):
         pass
 
-    @tags.tag(tags.NEW_REFERENCE)
+    @tag(tags.NEW_REFERENCE)
     def decode_new_reference(self, data, pos):
         pass
 
-    @tags.tag(tags.SMALL_ATOM)
+    @tag(tags.SMALL_ATOM)
     def decode_small_atom(self, data, pos):
         pass
 
-    @tags.tag(tags.FUN)
+    @tag(tags.FUN)
     def decode_fun(self, data, pos):
         pass
 
-    @tags.tag(tags.NEW_FUN)
+    @tag(tags.NEW_FUN)
     def decode_new_fun(self, data, pos):
         pass
 
-    @tags.tag(tags.EXPORT)
+    @tag(tags.EXPORT)
     def decode_export(self, data, pos):
         pass
 
-    @tags.tag(tags.BIT_BINARY)
+    @tag(tags.BIT_BINARY)
     def decode_bit_binary(self, data, pos):
         pass
 
-    @tags.tag(tags.NEW_FLOAT)
+    @tag(tags.NEW_FLOAT)
     def decode_new_float(self, data, pos):
         pass
 
@@ -135,7 +152,6 @@ class ETFDecoder(object):
                 data, pos = self.decode_term(data, pos)
                 yield data
         return type(_decoded_term_generator(data, pos, length))
-
 
 if __name__ == '__main__':
     d = ETFDecoder()
