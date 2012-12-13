@@ -29,10 +29,10 @@ class ETFDecodingError(Exception):
 class ETFDecoder(object):
     def __init__(self):
         super(ETFDecoder, self).__init__()
-        def _generate_handlers(): #yield all encode_* functions which have term tag
-            return ((enc.tag, enc) \
-                for enc in (getattr(self, f) \
-                for f in self.__class__.__dict__ if f.startswith('decode_')) if hasattr(enc, 'tag'))
+        def _generate_handlers(): #yield all decode_* functions which have term tag
+            return ((dec.tag, dec) \
+                for dec in (getattr(self, f) \
+                for f in self.__class__.__dict__ if f.startswith('decode_')) if hasattr(dec, 'tag'))
         self.handlers = dict(_generate_handlers())
 
     def decode(self, data):
