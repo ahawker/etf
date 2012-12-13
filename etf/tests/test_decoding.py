@@ -53,3 +53,6 @@ class TestDecoder(unittest.TestCase):
     def test_compressed_term_valid_data(self):
         #need to encode a term that is large enough to be compressed
         pass
+
+if __name__ == '__main__':
+    unittest.main()

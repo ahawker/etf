@@ -61,3 +61,6 @@ class TestAtom(unittest.TestCase):
 
     def test_invalid_length_string(self):
         self.assertRaises(ValueError, terms.Atom, ' ' * 256)
+
+if __name__ == '__main__':
+    unittest.main()
