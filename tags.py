@@ -33,8 +33,6 @@ def tag(tag):
     def decorator(func):
         @functools.wraps(func)
         def f(*args, **kwargs):
-            if not args[1]: #data
-                raise ValueError('{0} expects data but not None'.format(func.__name__))
             #args[1] is data, data first byte is tag
             first_byte = struct.unpack(format.INT8, args[1][0])[0]
             if tag != first_byte:
