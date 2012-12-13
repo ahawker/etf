@@ -15,7 +15,7 @@ class TestDecoder(unittest.TestCase):
         self.assertRaises(decoding.ETFDecodingError, self.decoder.decode, data)
 
     def test_correct_version(self):
-        data = struct.pack('>B', tags.VERSION)
+        data = struct.pack('>BB', tags.VERSION, tags.NIL)
         self.assertIsNotNone(self.decoder.decode(data))
 
     def test_small_integer_wrong_tag(self):
