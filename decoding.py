@@ -22,10 +22,10 @@ class ETFDecoder(object):
         version = struct.unpack(format.INT8, data[0])[0]
         if version != tags.VERSION:
             raise ETFDecodingError('Decode got version {0} but expects {1}'.format(version, tags.VERSION))
-        return True
+        return self.decode_term(data, pos=1)
 
     def decode_term(self, data, pos=0):
-        pass
+        return self.handlers[data[pos]](data, pos)
 
     @tags.tag(tags.COMPRESSED)
     def decode_compressed_term(self, data, pos):
