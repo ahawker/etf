@@ -1,5 +1,5 @@
 __author__ = 'ahawker'
-__all__ = ['Atom', 'Reference', 'Port', 'Pid']
+__all__ = ['Atom', 'Export', 'Port', 'Pid', 'Reference']
 
 class Atom(str):
     def __new__(cls, string):
@@ -14,8 +14,8 @@ class Atom(str):
     def __repr__(self):
         return '<Atom({0})>'.format(self)
 
-class Reference(object):
-    def __init__(self, node, id, creation):
+class Export(object):
+    def __init__(self, module, function, arity):
         pass
 
 class Port(object):
@@ -24,4 +24,8 @@ class Port(object):
 
 class Pid(object):
     def __init__(self, node, id, serial, creation):
+        pass
+
+class Reference(object):
+    def __init__(self, node, id, creation):
         pass
