@@ -45,16 +45,20 @@ class ETFEncoder(object):
 #        pass
 
     @types(int)
-    def encode_integer(self, data):
-        pass
+    def encode_integer(self, value):
+        if 0 <= value <= 255:
+            return tags.SMALL_INTEGER, struct.pack(format.INT8, value)
+        if -2147483648 <= value <= 2147483647:
+            return tags.INTEGER, struct.pack(format.INT32, value)
 
     @types(float)
     def encode_float(self, data):
         pass
 
     @types(bool, type(None), terms.Atom)
-    def encode_atom(self, data): #& small atom
-        pass
+    def encode_atom(self, value): #& small atom?
+        value = str(value)
+        return tags.ATOM, struct.pack(format.UINT16, len(value)), value
 
     @types(terms.Reference)
     def encode_reference(self, data): #& new reference
