@@ -1,6 +1,5 @@
-import decoding
+from etf import decoding, tags
 import struct
-import tags
 import unittest
 import zlib
 

@@ -1,5 +1,5 @@
+from etf import terms
 import unittest
-import terms
 
 __author__ = 'ahawker'
 
