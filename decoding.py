@@ -24,7 +24,7 @@ class ETFDecoder(object):
             raise ETFDecodingError('Decode got version {0} but expects {1}'.format(version, tags.VERSION))
         return True
 
-    def decode_term(self, data, pos):
+    def decode_term(self, data, pos=0):
         pass
 
     @tags.tag(tags.COMPRESSED)
@@ -32,7 +32,7 @@ class ETFDecoder(object):
         offset = pos + 4
         ucsize = struct.unpack(format.UINT32, data[pos:offset])[0]
         csize = offset + ucsize
-        return zlib.decompress(data[offset:csize])
+        return self.decode_term(zlib.decompress(data[offset:csize]))
 
     @tags.tag(tags.SMALL_INTEGER)
     def decode_small_integer(self, data, pos):
