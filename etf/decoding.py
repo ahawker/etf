@@ -12,13 +12,13 @@ def tag(tag):
     def decorator(func):
         @functools.wraps(func)
         def f(*args, **kwargs):
-            tbyte = struct.unpack(format.INT8, args[1][0])[0]
-            if tag != tbyte:
-                raise ValueError('{0} got tag {1} but expects {2}'.format(func.__name__, tbyte, tag))
             pos = args[2]
             if pos < 0:
                 raise ValueError('{0} expects non-negative position'.format(func.__name__))
-            return func(*(args[0], args[1], args[2]+1), **kwargs)
+            tbyte = struct.unpack(format.INT8, args[1][pos])[0]
+            if tag != tbyte:
+                raise ValueError('{0} got tag {1} but expects {2}'.format(func.__name__, tbyte, tag))
+            return func(*(args[0], args[1], pos+1), **kwargs)
         f.tag = tag
         return f
     return decorator
@@ -42,7 +42,8 @@ class ETFDecoder(object):
         return self.decode_term(data, pos=1)
 
     def decode_term(self, data, pos=0):
-        return self.handlers[data[pos]](data, pos)
+        tag = struct.unpack(format.INT8, data[pos])[0]
+        return self.handlers[tag](data, pos)
 
     @tag(tags.COMPRESSED)
     def decode_compressed_term(self, data, pos):
