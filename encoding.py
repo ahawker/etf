@@ -52,12 +52,12 @@ class ETFEncoder(object):
     def encode_float(self, data):
         pass
 
-    @types(bool, type(None), type(terms.Atom))
+    @types(bool, type(None), terms.Atom)
     def encode_atom(self, data): #& small atom
         pass
 
-    @types(type(terms.Reference))
-    def encode_reference(self, data):
+    @types(terms.Reference)
+    def encode_reference(self, data): #& new reference
         pass
 
 #    def encode_small_tuple(self, data):
@@ -94,9 +94,9 @@ class ETFEncoder(object):
     def encode_big(self, data):#small/big
         pass
 
-    @types(type(terms.Reference))
-    def encode_new_reference(self, data):
-        pass
+#    @types(terms.Reference)
+#    def encode_new_reference(self, data):
+#        pass
 
 #    def encode_small_atom(self, data):
 #        pass
@@ -107,7 +107,7 @@ class ETFEncoder(object):
     def encode_new_fun(self, data):
         pass
 
-    @types(type(terms.Export))
+    @types(terms.Export)
     def encode_export(self, data):
         pass
 
