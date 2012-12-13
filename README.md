@@ -1,4 +1,4 @@
-# etf  
+# etf [![Build Status](https://travis-ci.org/ahawker/etf.png)](https://travis-ci.org/ahawker/etf)
 etf is a module for encoding/decoding of the [Erlang External Term Format](http://erlang.org/doc/apps/erts/erl_ext_dist.html) in Python.
 
 ### Status  
