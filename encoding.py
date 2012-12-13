@@ -25,12 +25,18 @@ class ETFEncodingError(Exception):
 class ETFEncoder(object):
     def __init__(self):
         super(ETFEncoder, self).__init__()
+        def _generate_handlers(): #yield all encode_* functions which have types tuple
+            return ((enc.types, enc) \
+                for enc in (getattr(self, f) \
+                for f in self.__class__.__dict__ if f.startswith('encode_')) if hasattr(enc, 'types'))
+        #flatten type tuple into individual keys
+        self.handlers = dict((t, enc) for types, enc in _generate_handlers() for t in types)
 
     def encode(self, data):
         pass
 
     def encode_term(self, data):
-        pass
+        return self.handlers[type(data)](data)
 
     def encode_compressed_term(self, data):
         pass
