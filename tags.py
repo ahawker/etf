@@ -1,7 +1,3 @@
-import format
-import functools
-import struct
-
 __author__ = 'ahawker'
 
 NEW_FLOAT     = 70
@@ -28,19 +24,3 @@ NEW_REFERENCE = 114
 SMALL_ATOM    = 115
 FUN           = 117
 VERSION       = 131
-
-def tag(tag):
-    def decorator(func):
-        @functools.wraps(func)
-        def f(*args, **kwargs):
-            #args[1] is data, data first byte is tag
-            first_byte = struct.unpack(format.INT8, args[1][0])[0]
-            if tag != first_byte:
-                raise ValueError('{0} got tag {1} but expects {2}'.format(func.__name__, first_byte, tag))
-            pos = args[2]
-            if pos < 0:
-                raise ValueError('{0} expects non-negative position'.format(func.__name__))
-            return func(*(args[0], args[1], args[2]+1), **kwargs)
-        f.tag = tag
-        return f
-    return decorator
