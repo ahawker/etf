@@ -149,5 +149,20 @@ class TestEncoder(unittest.TestCase):
         tag = term[0]
         self.assertEqual(tag, tags.LARGE_TUPLE)
 
+    def test_list_empty(self):
+        term = self.encoder.encode_list([])
+        tag = term[0]
+        self.assertEqual(tag, tags.NIL)
+
+    def test_list_one_item(self):
+        term = self.encoder.encode_list([1])
+        tag = term[0]
+        self.assertEqual(tag, tags.LIST)
+
+    def test_list_many_items(self):
+        term = self.encoder.encode_list([1] * 4096)
+        tag = term[0]
+        self.assertEqual(tag, tags.LIST)
+
 if __name__ == '__main__':
     unittest.main()

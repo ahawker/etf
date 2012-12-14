@@ -38,7 +38,10 @@ class ETFEncoder(object):
         pass
 
     def encode_term(self, value):
-        tag, term = self.handlers[type(value)](value)
+        term = self.handlers[type(value)](value)
+        if len(term) == 1:
+            return chr(term[0])
+        tag, term = term
         return chr(tag), term
 
     def encode_compressed_term(self, data):
@@ -86,7 +89,7 @@ class ETFEncoder(object):
         else:
             tag = tags.LARGE_TUPLE
             arity = struct.pack(format.UINT32, arity)
-        return (tag, arity) + tuple(itertools.chain.from_iterable(map(lambda t: self.encode_term(t), value)))
+        return (tag, arity) + self._encode_iterable(value)
 
 #    def encode_nil(self, data):
 #        pass
@@ -96,8 +99,11 @@ class ETFEncoder(object):
         pass
 
     @types(list)
-    def encode_list(self, data): #& NIL
-        pass
+    def encode_list(self, value): #& NIL
+        if not value:
+            return tags.NIL,
+        length = struct.pack(format.UINT32, len(value))
+        return (tags.LIST, length) + self._encode_iterable(value) + (tags.NIL,)
 
 #    def encode_binary(self, data):
 #        pass
@@ -134,6 +140,9 @@ class ETFEncoder(object):
 
     def encode_new_float(self, data):
         pass
+
+    def _encode_iterable(self, iterable):
+        return tuple(itertools.chain.from_iterable(map(lambda t: self.encode_term(t), iterable)))
 
 if __name__ == '__main__':
     e = ETFEncoder()
