@@ -1,5 +1,6 @@
 import functools
 import format
+import itertools
 import struct
 import tags
 import terms
@@ -33,11 +34,12 @@ class ETFEncoder(object):
         self.handlers = dict((t, enc) for types, enc in _generate_handlers() for t in types)
         self.minor_version = minor_version
 
-    def encode(self, data):
+    def encode(self, value):
         pass
 
-    def encode_term(self, data):
-        return self.handlers[type(data)](data)
+    def encode_term(self, value):
+        tag, term = self.handlers[type(value)](value)
+        return chr(tag), term
 
     def encode_compressed_term(self, data):
         pass
@@ -76,8 +78,15 @@ class ETFEncoder(object):
 #        pass
 
     @types(tuple)
-    def encode_tuple(self, data): #small/large tuple
-        pass
+    def encode_tuple(self, value):
+        arity = len(value)
+        if 0 <= arity <= 255:
+            tag = tags.SMALL_TUPLE
+            arity = struct.pack(format.INT8, arity)
+        else:
+            tag = tags.LARGE_TUPLE
+            arity = struct.pack(format.UINT32, arity)
+        return (tag, arity) + tuple(itertools.chain.from_iterable(map(lambda t: self.encode_term(t), value)))
 
 #    def encode_nil(self, data):
 #        pass

@@ -120,9 +120,34 @@ class TestEncoder(unittest.TestCase):
 
     def test_new_float_valid(self):
         self.encoder.minor_version = 1
-        term = self.encoder.encode_float(float(4098))
+        term = self.encoder.encode_float(float(4096))
         tag = term[0]
         self.assertEqual(tag, tags.NEW_FLOAT)
+
+    def test_small_tuple_empty(self):
+        term = self.encoder.encode_tuple(tuple())
+        tag = term[0]
+        self.assertEqual(tag, tags.SMALL_TUPLE)
+
+    def test_small_tuple_one_item(self):
+        term = self.encoder.encode_tuple((1,))
+        tag = term[0]
+        self.assertEqual(tag, tags.SMALL_TUPLE)
+
+    def test_small_tuple_max_items(self):
+        term = self.encoder.encode_tuple((0,) * 255)
+        tag = term[0]
+        self.assertEqual(tag, tags.SMALL_TUPLE)
+
+    def test_large_tuple_min_items(self):
+        term = self.encoder.encode_tuple((0,) * 256)
+        tag = term[0]
+        self.assertEqual(tag, tags.LARGE_TUPLE)
+
+    def test_large_tuple_many_items(self):
+        term = self.encoder.encode_tuple((0,) * 4096)
+        tag = term[0]
+        self.assertEqual(tag, tags.LARGE_TUPLE)
 
 if __name__ == '__main__':
     unittest.main()
