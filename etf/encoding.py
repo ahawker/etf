@@ -138,9 +138,6 @@ class ETFEncoder(object):
     def encode_bit_binary(self, data):
         pass
 
-    def encode_new_float(self, data):
-        pass
-
     def _encode_iterable(self, iterable):
         return tuple(itertools.chain.from_iterable(map(lambda t: self.encode_term(t), iterable)))
 
