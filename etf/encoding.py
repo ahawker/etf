@@ -23,7 +23,7 @@ class ETFEncodingError(Exception):
     pass
 
 class ETFEncoder(object):
-    def __init__(self):
+    def __init__(self, minor_version=1):
         super(ETFEncoder, self).__init__()
         def _generate_handlers(): #yield all encode_* functions which have types tuple
             return ((enc.types, enc) \
@@ -31,6 +31,7 @@ class ETFEncoder(object):
                 for f in self.__class__.__dict__ if f.startswith('encode_')) if hasattr(enc, 'types'))
         #flatten type tuple into individual keys
         self.handlers = dict((t, enc) for types, enc in _generate_handlers() for t in types)
+        self.minor_version = minor_version
 
     def encode(self, data):
         pass
@@ -52,8 +53,12 @@ class ETFEncoder(object):
             return tags.INTEGER, struct.pack(format.INT32, value)
 
     @types(float)
-    def encode_float(self, data):
-        pass
+    def encode_float(self, value):
+        if not self.minor_version:
+            value = '{0:.20e}'.format(value)
+            pad = 31 - len(value)
+            return tags.FLOAT, ''.join((value, '\x00'*pad))
+        return tags.NEW_FLOAT, struct.pack(format.DOUBLE, value)
 
     @types(bool, type(None), terms.Atom)
     def encode_atom(self, value): #& small atom?

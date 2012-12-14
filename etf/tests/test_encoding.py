@@ -88,5 +88,41 @@ class TestEncoder(unittest.TestCase):
         tag = term[0]
         self.assertEqual(tag, tags.ATOM)
 
+    def test_float_zero(self):
+        self.encoder.minor_version = 0
+        term = self.encoder.encode_float(float(0))
+        tag = term[0]
+        self.assertEqual(tag, tags.FLOAT)
+
+    def test_float_negative(self):
+        self.encoder.minor_version = 0
+        term = self.encoder.encode_float(float(1))
+        tag = term[0]
+        self.assertEqual(tag, tags.FLOAT)
+
+    def test_float_valid(self):
+        self.encoder.minor_version = 0
+        term = self.encoder.encode_float(float(4098))
+        tag = term[0]
+        self.assertEqual(tag, tags.FLOAT)
+
+    def test_new_float_zero(self):
+        self.encoder.minor_version = 1
+        term = self.encoder.encode_float(float(0))
+        tag = term[0]
+        self.assertEqual(tag, tags.NEW_FLOAT)
+
+    def test_new_float_negative(self):
+        self.encoder.minor_version = 1
+        term = self.encoder.encode_float(float(1))
+        tag = term[0]
+        self.assertEqual(tag, tags.NEW_FLOAT)
+
+    def test_new_float_valid(self):
+        self.encoder.minor_version = 1
+        term = self.encoder.encode_float(float(4098))
+        tag = term[0]
+        self.assertEqual(tag, tags.NEW_FLOAT)
+
 if __name__ == '__main__':
     unittest.main()
