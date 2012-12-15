@@ -36,7 +36,7 @@ class Port(object):
     def __repr__(self):
         return '<Port({0})>'.format(self)
     def __str__(self):
-        return '[{0}]: Atom({1}): {2}'.format(self.creation, self.node, ','.join(str(i) for i in self.id))
+        return '[{0}]: Atom({1}) Id:{2}'.format(self.creation, self.node, self.id)
 
 class Pid(object):
     def __init__(self, node, id, serial, creation):
@@ -48,16 +48,27 @@ class Pid(object):
     def __repr__(self):
         return '<Pid({0})>'.format(self)
     def __str__(self):
-        return '[{0}/{1}]: Atom({2}): {3}'.format(self.creation, self.serial,
-                                                  self.node, ','.join(str(i) for i in self.id))
+        return '[{0}/{1}]: Atom({2}) Id:{3}'.format(self.creation, self.serial, self.node, self.id)
 
 class Reference(object):
-    def __init__(self, node, creation, *ids):
+    def __init__(self, node, creation, id):
         self.node = node
         self.creation = creation
-        self.id = ids
+        self.id = id
 
     def __repr__(self):
         return '<Reference({0})>'.format(self)
     def __str__(self):
-        return '[{0}]: Atom({1}): {2}'.format(self.creation, self.node, ','.join(str(i) for i in self.id))
+        return '[{0}]: Atom({1}) Id:{2}'.format(self.creation, self.node, self.id)
+
+class NewReference(object):
+    def __init__(self, node, creation, *ids):
+        self.node = node
+        self.creation = creation
+        self.ids = ids
+        self.length = len(self.ids)
+
+    def __repr__(self):
+        return '<NewReference({0})>'.format(self)
+    def __str__(self):
+        return '[{0}]: Atom({1}) Id:{2}'.format(self.creation, self.node, ','.join(str(i) for i in self.id))
