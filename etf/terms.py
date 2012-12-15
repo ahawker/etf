@@ -25,14 +25,15 @@ class Binary(str):
 
 class BitBinary(str):
     def __new__(cls, value, bits):
-        obj = super(BitBinary, cls).__new__(cls, value)
-        obj.bits = bits
-        return obj
+        return super(BitBinary, cls).__new__(cls, value)
+    def __init__(self, string, bits):
+        super(BitBinary, self).__init__(string)
+        self.bits = bits
 
     def __repr__(self):
         return '<BitBinary({0})>'.format(self)
     def __str__(self):
-        return '[{0}] {1}'.format(self.bits, super(BitBinary, self).__str__)
+        return '[{0}] {1}'.format(self.bits, super(BitBinary, self).__str__())
 
 class Export(object):
     def __init__(self, module, function, arity):
