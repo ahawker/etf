@@ -74,14 +74,6 @@ class ETFEncoder(object):
         creation = struct.pack(format.INT8, ref.creation)
         return tags.REFERENCE, node, id, creation
 
-    @types(terms.NewReference)
-    def encode_new_reference(self, ref):
-        length = len(ref.ids)
-        node = self.encode_atom(ref.node)
-        creation = struct.pack(format.INT8, ref.creation)
-        ids = struct.pack(format.VARIABLE_UINT32.format(length), *ref.ids)
-        return tags.NEW_REFERENCE, length, node, creation, ids
-
     @types(terms.Port)
     def encode_port(self, port):
         node = self.encode_atom(port.node)
@@ -146,9 +138,13 @@ class ETFEncoder(object):
     def encode_big(self, data):#small/big
         pass
 
-#    @types(terms.Reference)
-#    def encode_new_reference(self, data):
-#        pass
+    @types(terms.NewReference)
+    def encode_new_reference(self, ref):
+        length = len(ref.ids)
+        node = self.encode_atom(ref.node)
+        creation = struct.pack(format.INT8, ref.creation)
+        ids = struct.pack(format.VARIABLE_UINT32.format(length), *ref.ids)
+        return tags.NEW_REFERENCE, length, node, creation, ids
 
 #    def encode_small_atom(self, data):
 #        pass
@@ -163,8 +159,9 @@ class ETFEncoder(object):
     def encode_export(self, data):
         pass
 
-    def encode_bit_binary(self, data):
-        pass
+    @types(terms.BitBinary)
+    def encode_bit_binary(self, value):
+        return tags.BIT_BINARY, struct.pack('>BIB', len(value), value.bits), value
 
     @types(float, terms.NewFloat)
     def encode_new_float(self, value):

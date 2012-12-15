@@ -1,5 +1,5 @@
 __author__ = 'ahawker'
-__all__ = ['Atom', 'Export', 'Float', 'NewFloat', 'Port', 'Pid', 'Reference']
+__all__ = ['Atom', 'Binary', 'BitBinary', 'Export', 'Float', 'NewFloat', 'Port', 'Pid', 'Reference', 'String']
 
 class Atom(str):
     def __new__(cls, string):
@@ -15,6 +15,23 @@ class Atom(str):
 
     def __repr__(self):
         return '<Atom({0})>'.format(self)
+
+class Binary(str):
+    def __init__(self, value):
+        super(Binary, self).__init__(value)
+
+    def __repr__(self):
+        return '<Binary({0})>'.format(self)
+
+class BitBinary(str):
+    def __init__(self, value, bits):
+        super(BitBinary, self).__init__(value)
+        self.bits = bits
+
+    def __repr__(self):
+        return '<BitBinary({0})>'.format(self)
+    def __str__(self):
+        return '[{0}] {1}'.format(self.bits, super(BitBinary, self).__str__)
 
 class Export(object):
     def __init__(self, module, function, arity):
@@ -93,10 +110,3 @@ class String(unicode):
 
     def __repr__(self):
         return '<String({0})>'.format(self)
-
-class Binary(str):
-    def __init__(self, value):
-        super(Binary, self).__init__(value)
-
-    def __repr__(self):
-        return '<Binary({0})>'.format(self)
