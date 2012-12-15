@@ -37,8 +37,8 @@ class ETFEncoder(object):
     def encode(self, value):
         pass
 
-    def encode_term(self, value):
-        term = self.handlers[type(value)](value)
+    def encode_term(self, term):
+        term = self.handlers[type(term)](term)
         if len(term) == 1: #NIL only has tag
             return chr(term[0])
         tag, term = term
@@ -66,9 +66,9 @@ class ETFEncoder(object):
         return tags.NEW_FLOAT, struct.pack(format.DOUBLE, value)
 
     @types(bool, type(None), terms.Atom)
-    def encode_atom(self, value): #& small atom?
-        value = str(value)
-        return tags.ATOM, struct.pack(format.UINT16, len(value)), value
+    def encode_atom(self, atom): #& small atom?
+        atom = str(atom)
+        return tags.ATOM, struct.pack(format.UINT16, len(atom)), atom
 
     @types(terms.Reference)
     def encode_reference(self, ref): #& new reference
@@ -85,15 +85,15 @@ class ETFEncoder(object):
 #        pass
 
     @types(tuple)
-    def encode_tuple(self, value):
-        arity = len(value)
+    def encode_tuple(self, tup):
+        arity = len(tup)
         if 0 <= arity <= 255:
             tag = tags.SMALL_TUPLE
             arity = struct.pack(format.INT8, arity)
         else:
             tag = tags.LARGE_TUPLE
             arity = struct.pack(format.UINT32, arity)
-        return (tag, arity) + self._encode_iterable(value)
+        return (tag, arity) + self._encode_iterable(tup)
 
 #    def encode_nil(self, data):
 #        pass
@@ -103,11 +103,11 @@ class ETFEncoder(object):
         pass
 
     @types(list)
-    def encode_list(self, value): #& NIL
-        if not value:
+    def encode_list(self, lst): #& NIL
+        if not lst:
             return tags.NIL,
-        length = struct.pack(format.UINT32, len(value))
-        return (tags.LIST, length) + self._encode_iterable(value) + (tags.NIL,)
+        length = struct.pack(format.UINT32, len(lst))
+        return (tags.LIST, length) + self._encode_iterable(lst) + (tags.NIL,)
 
 #    def encode_binary(self, data):
 #        pass
