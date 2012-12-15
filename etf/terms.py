@@ -27,6 +27,20 @@ class Export(object):
     def __str__(self):
         return '{0}.{1}({2})'.format(self.module, self.function, self.arity)
 
+class Float(float):
+    def __init__(self, value):
+        super(Float, self).__init__(value)
+
+    def __repr__(self):
+        return '<Float({0})>'.format(self)
+
+class NewFloat(float):
+    def __init__(self, value):
+        super(NewFloat, self).__init__(value)
+
+    def __repr__(self):
+        return '<NewFloat({0})>'.format(self)
+
 class Port(object):
     def __init__(self, node, id, creation):
         self.node = node

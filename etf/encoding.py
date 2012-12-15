@@ -24,7 +24,7 @@ class ETFEncodingError(Exception):
     pass
 
 class ETFEncoder(object):
-    def __init__(self, minor_version=1):
+    def __init__(self):
         super(ETFEncoder, self).__init__()
         def _generate_handlers(): #yield all encode_* functions which have types tuple
             return ((enc.types, enc) \
@@ -32,7 +32,6 @@ class ETFEncoder(object):
                 for f in self.__class__.__dict__ if f.startswith('encode_')) if hasattr(enc, 'types'))
         #flatten type tuple into individual keys
         self.handlers = dict((t, enc) for types, enc in _generate_handlers() for t in types)
-        self.minor_version = minor_version
 
     def encode(self, value):
         pass
@@ -57,12 +56,15 @@ class ETFEncoder(object):
         if -2147483648 <= value <= 2147483647:
             return tags.INTEGER, struct.pack(format.INT32, value)
 
-    @types(float)
+    @types(terms.Float)
     def encode_float(self, value):
-        if not self.minor_version:
-            value = '{0:.20e}'.format(value)
-            pad = 31 - len(value)
-            return tags.FLOAT, ''.join((value, '\x00'*pad))
+        value = '{0:.20e}'.format(value)
+        pad = 31 - len(value)
+        return tags.FLOAT, ''.join((value, '\x00'*pad))
+
+
+    @types(float, terms.NewFloat)
+    def encode_new_float(self, value):
         return tags.NEW_FLOAT, struct.pack(format.DOUBLE, value)
 
     @types(bool, type(None), terms.Atom)
@@ -121,7 +123,7 @@ class ETFEncoder(object):
 #    def encode_nil(self, data):
 #        pass
 
-    @types(str, unicode)
+    @types(str)
     def encode_string(self, data): #& binary
         pass
 
@@ -132,8 +134,9 @@ class ETFEncoder(object):
         length = struct.pack(format.UINT32, len(lst))
         return (tags.LIST, length) + self._encode_iterable(lst) + (tags.NIL,)
 
-#    def encode_binary(self, data):
-#        pass
+    @types(unicode)
+    def encode_binary(self, data):
+        pass
 
 #    def encode_small_big(self, data):
 #        pass

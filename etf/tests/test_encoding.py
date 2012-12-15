@@ -89,38 +89,49 @@ class TestEncoder(unittest.TestCase):
         self.assertEqual(tag, tags.ATOM)
 
     def test_float_zero(self):
-        self.encoder.minor_version = 0
-        term = self.encoder.encode_float(float(0))
+        term = self.encoder.encode_float(terms.Float(0))
         tag = term[0]
         self.assertEqual(tag, tags.FLOAT)
 
     def test_float_negative(self):
-        self.encoder.minor_version = 0
-        term = self.encoder.encode_float(float(1))
+        term = self.encoder.encode_float(terms.Float(1))
         tag = term[0]
         self.assertEqual(tag, tags.FLOAT)
 
     def test_float_valid(self):
-        self.encoder.minor_version = 0
-        term = self.encoder.encode_float(float(4098))
+        term = self.encoder.encode_float(terms.Float(4098))
         tag = term[0]
         self.assertEqual(tag, tags.FLOAT)
 
     def test_new_float_zero(self):
         self.encoder.minor_version = 1
-        term = self.encoder.encode_float(float(0))
+        term = self.encoder.encode_new_float(terms.NewFloat(0))
         tag = term[0]
         self.assertEqual(tag, tags.NEW_FLOAT)
 
     def test_new_float_negative(self):
-        self.encoder.minor_version = 1
-        term = self.encoder.encode_float(float(1))
+        term = self.encoder.encode_new_float(terms.NewFloat(1))
         tag = term[0]
         self.assertEqual(tag, tags.NEW_FLOAT)
 
     def test_new_float_valid(self):
+        term = self.encoder.encode_new_float(terms.NewFloat(4096))
+        tag = term[0]
+        self.assertEqual(tag, tags.NEW_FLOAT)
+
+    def test_new_float_builtin_zero(self):
         self.encoder.minor_version = 1
-        term = self.encoder.encode_float(float(4096))
+        term = self.encoder.encode_new_float(float(0))
+        tag = term[0]
+        self.assertEqual(tag, tags.NEW_FLOAT)
+
+    def test_new_float_builtin_negative(self):
+        term = self.encoder.encode_new_float(float(1))
+        tag = term[0]
+        self.assertEqual(tag, tags.NEW_FLOAT)
+
+    def test_new__float_builtin_valid(self):
+        term = self.encoder.encode_new_float(float(4096))
         tag = term[0]
         self.assertEqual(tag, tags.NEW_FLOAT)
 
