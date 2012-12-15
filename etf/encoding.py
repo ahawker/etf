@@ -156,12 +156,17 @@ class ETFEncoder(object):
         pass
 
     @types(terms.Export)
-    def encode_export(self, data):
-        pass
+    def encode_export(self, export):
+        module = self.encode_atom(export.module)
+        function = self.encode_atom(export.function)
+        arity = self.encode_integer(export.arity)
+        return tags.EXPORT, module, function, arity
 
     @types(terms.BitBinary)
     def encode_bit_binary(self, value):
-        return tags.BIT_BINARY, struct.pack('>BIB', len(value), value.bits), value
+        length = struct.pack(format.UINT32, len(value))
+        bits = struct.pack(format.INT8, value.bits)
+        return tags.BIT_BINARY, length, bits, value
 
     @types(float, terms.NewFloat)
     def encode_new_float(self, value):

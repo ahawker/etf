@@ -265,6 +265,22 @@ class TestEncoder(unittest.TestCase):
         tag = term[0]
         self.assertEqual(tag, tags.BINARY)
 
+    def test_bit_binary_empty(self):
+        term = self.encoder.encode_bit_binary(terms.BitBinary('', 0))
+        tag = term[0]
+        self.assertEqual(tag, tags.BIT_BINARY)
+
+    def test_bit_binary_valid(self):
+        term = self.encoder.encode_bit_binary(terms.BitBinary('HelloWorld', 1))
+        tag = term[0]
+        self.assertEqual(tag, tags.BIT_BINARY)
+
+    def test_export_valid(self):
+        export = terms.Export(terms.Atom('Module'), terms.Atom('Function'), 3)
+        term = self.encoder.encode_export(export)
+        tag = term[0]
+        self.assertEqual(tag, tags.EXPORT)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -24,9 +24,10 @@ class Binary(str):
         return '<Binary({0})>'.format(self)
 
 class BitBinary(str):
-    def __init__(self, value, bits):
-        super(BitBinary, self).__init__(value)
-        self.bits = bits
+    def __new__(cls, value, bits):
+        obj = super(BitBinary, cls).__new__(cls, value)
+        obj.bits = bits
+        return obj
 
     def __repr__(self):
         return '<BitBinary({0})>'.format(self)
