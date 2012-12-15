@@ -8,4 +8,5 @@ UINT32   = '>I'
 FLOAT    = '>f'
 DOUBLE   = '>d'
 
+VARIABLE_UINT32  = '>{0:d}I'
 ID_CREATION_PAIR = '>IB'

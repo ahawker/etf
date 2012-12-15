@@ -39,7 +39,7 @@ class ETFEncoder(object):
 
     def encode_term(self, value):
         term = self.handlers[type(value)](value)
-        if len(term) == 1:
+        if len(term) == 1: #NIL only has tag
             return chr(term[0])
         tag, term = term
         return chr(tag), term
@@ -71,8 +71,12 @@ class ETFEncoder(object):
         return tags.ATOM, struct.pack(format.UINT16, len(value)), value
 
     @types(terms.Reference)
-    def encode_reference(self, data): #& new reference
-        pass
+    def encode_reference(self, ref): #& new reference
+        length = len(ref.id)
+        node = self.encode_atom(ref.node)
+        creation = struct.pack(format.INT8, ref.creation)
+        ids = struct.pack(format.VARIABLE_UINT32.format(length), *ref.id)
+        return tags.NEW_REFERENCE, length, node, creation, ids
 
 #    def encode_small_tuple(self, data):
 #        pass

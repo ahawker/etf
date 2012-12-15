@@ -164,5 +164,17 @@ class TestEncoder(unittest.TestCase):
         tag = term[0]
         self.assertEqual(tag, tags.LIST)
 
+    def test_new_reference_one_id(self):
+        ref = terms.Reference(terms.Atom(True), 0, 0)
+        term = self.encoder.encode_reference(ref)
+        tag = term[0]
+        self.assertEqual(tag, tags.NEW_REFERENCE)
+
+    def test_new_reference_many_ids(self):
+        ref = terms.Reference(terms.Atom(True), 0, *((0,) * 4096))
+        term = self.encoder.encode_reference(ref)
+        tag = term[0]
+        self.assertEqual(tag, tags.NEW_REFERENCE)
+
 if __name__ == '__main__':
     unittest.main()

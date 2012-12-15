@@ -52,10 +52,10 @@ class Pid(object):
                                                   self.node, ','.join(str(i) for i in self.id))
 
 class Reference(object):
-    def __init__(self, node, id, creation):
+    def __init__(self, node, creation, *ids):
         self.node = node
-        self.id = id
         self.creation = creation
+        self.id = ids
 
     def __repr__(self):
         return '<Reference({0})>'.format(self)
