@@ -205,5 +205,66 @@ class TestEncoder(unittest.TestCase):
         tag = term[0]
         self.assertEqual(tag, tags.PID)
 
+    def test_string_empty(self):
+        term = self.encoder.encode_string(terms.String(''))
+        tag = term[0]
+        self.assertEqual(tag, tags.STRING)
+
+    def test_string_valid(self):
+        term = self.encoder.encode_string(terms.String('HelloWorld'))
+        tag = term[0]
+        self.assertEqual(tag, tags.STRING)
+
+    def test_string_max_length(self):
+        term = self.encoder.encode_string(terms.String(' ' * 65535))
+        tag = term[0]
+        self.assertEqual(tag, tags.STRING)
+
+    def test_string_too_long(self):
+        term = self.encoder.encode_string(terms.String(' ' * 65536))
+        tag = term[0]
+        self.assertEqual(tag, tags.LIST)
+
+    def test_string_builtin_empty(self):
+        term = self.encoder.encode_string(unicode(''))
+        tag = term[0]
+        self.assertEqual(tag, tags.STRING)
+
+    def test_string_builtin_valid(self):
+        term = self.encoder.encode_string(unicode('HelloWorld'))
+        tag = term[0]
+        self.assertEqual(tag, tags.STRING)
+
+    def test_string_builtin_max_length(self):
+        term = self.encoder.encode_string(unicode(' ' * 65535))
+        tag = term[0]
+        self.assertEqual(tag, tags.STRING)
+
+    def test_string_builtin_too_long(self):
+        term = self.encoder.encode_string(unicode(' ' * 65536))
+        tag = term[0]
+        self.assertEqual(tag, tags.LIST)
+
+    def test_binary_empty(self):
+        term = self.encoder.encode_binary(terms.Binary(''))
+        tag = term[0]
+        self.assertEqual(tag, tags.BINARY)
+
+    def test_binary_valid(self):
+        term = self.encoder.encode_binary(terms.Binary('HelloWorld'))
+        tag = term[0]
+        self.assertEqual(tag, tags.BINARY)
+
+    def test_binary_builtin_empty(self):
+        term = self.encoder.encode_binary(str(''))
+        tag = term[0]
+        self.assertEqual(tag, tags.BINARY)
+
+    def test_binary_builtin_valid(self):
+        term = self.encoder.encode_binary(str('HelloWorld'))
+        tag = term[0]
+        self.assertEqual(tag, tags.BINARY)
+
+
 if __name__ == '__main__':
     unittest.main()

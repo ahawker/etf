@@ -62,11 +62,6 @@ class ETFEncoder(object):
         pad = 31 - len(value)
         return tags.FLOAT, ''.join((value, '\x00'*pad))
 
-
-    @types(float, terms.NewFloat)
-    def encode_new_float(self, value):
-        return tags.NEW_FLOAT, struct.pack(format.DOUBLE, value)
-
     @types(bool, type(None), terms.Atom)
     def encode_atom(self, atom): #& small atom?
         atom = str(atom)
@@ -123,9 +118,12 @@ class ETFEncoder(object):
 #    def encode_nil(self, data):
 #        pass
 
-    @types(str)
-    def encode_string(self, data): #& binary
-        pass
+    @types(unicode, terms.String)
+    def encode_string(self, string):
+        string = [ord(c) for c in string]
+        if len(string) > 65535:
+            return self.encode_list(string)
+        return tags.STRING, struct.pack(format.UINT16, len(string)), string
 
     @types(list)
     def encode_list(self, lst): #& NIL
@@ -134,9 +132,9 @@ class ETFEncoder(object):
         length = struct.pack(format.UINT32, len(lst))
         return (tags.LIST, length) + self._encode_iterable(lst) + (tags.NIL,)
 
-    @types(unicode)
-    def encode_binary(self, data):
-        pass
+    @types(str, terms.Binary)
+    def encode_binary(self, binary):
+        return tags.BINARY, struct.pack(format.UINT32, len(binary)), binary
 
 #    def encode_small_big(self, data):
 #        pass
@@ -167,6 +165,10 @@ class ETFEncoder(object):
 
     def encode_bit_binary(self, data):
         pass
+
+    @types(float, terms.NewFloat)
+    def encode_new_float(self, value):
+        return tags.NEW_FLOAT, struct.pack(format.DOUBLE, value)
 
     def _encode_iterable(self, iterable):
         return tuple(itertools.chain.from_iterable(map(lambda t: self.encode_term(t), iterable)))

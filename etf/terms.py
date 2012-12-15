@@ -85,4 +85,18 @@ class NewReference(object):
     def __repr__(self):
         return '<NewReference({0})>'.format(self)
     def __str__(self):
-        return '[{0}]: Atom({1}) Id:{2}'.format(self.creation, self.node, ','.join(str(i) for i in self.id))
+        return '[{0}]: Atom({1}) Id:{2}'.format(self.creation, self.node, ','.join(str(i) for i in self.ids))
+
+class String(unicode):
+    def __init__(self, value):
+        super(String, self).__init__(value)
+
+    def __repr__(self):
+        return '<String({0})>'.format(self)
+
+class Binary(str):
+    def __init__(self, value):
+        super(Binary, self).__init__(value)
+
+    def __repr__(self):
+        return '<Binary({0})>'.format(self)
