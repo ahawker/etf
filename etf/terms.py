@@ -1,5 +1,5 @@
 __author__ = 'ahawker'
-__all__ = ['Atom', 'Export', 'Port', 'Pid', 'Reference']
+__all__ = ['Atom', 'Export', 'Float', 'NewFloat', 'Port', 'Pid', 'Reference']
 
 class Atom(str):
     def __new__(cls, string):
