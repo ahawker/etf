@@ -71,12 +71,35 @@ class ETFEncoder(object):
         return tags.ATOM, struct.pack(format.UINT16, len(atom)), atom
 
     @types(terms.Reference)
-    def encode_reference(self, ref): #& new reference
-        length = len(ref.id)
+    def encode_reference(self, ref):
+        node = self.encode_atom(ref.node)
+        id = struct.pack(format.UINT32, ref.id)
+        creation = struct.pack(format.INT8, ref.creation)
+        return tags.REFERENCE, node, id, creation
+
+    @types(terms.NewReference)
+    def encode_new_reference(self, ref):
+        length = len(ref.ids)
         node = self.encode_atom(ref.node)
         creation = struct.pack(format.INT8, ref.creation)
-        ids = struct.pack(format.VARIABLE_UINT32.format(length), *ref.id)
+        ids = struct.pack(format.VARIABLE_UINT32.format(length), *ref.ids)
         return tags.NEW_REFERENCE, length, node, creation, ids
+
+    @types(terms.Port)
+    def encode_port(self, port):
+        node = self.encode_atom(port.node)
+        id = struct.pack(format.UINT32, port.id)
+        creation = struct.pack(format.INT8, port.creation)
+        return tags.PORT, node, id, creation
+
+    @types(terms.Pid)
+    def encode_pid(self, pid):
+        node = self.encode_atom(pid.node)
+        id = struct.pack(format.UINT32, pid.id)
+        serial = struct.pack(format.UINT32, pid.serial)
+        creation = struct.pack(format.INT8, pid.creation)
+        return tags.PID, node, id, serial, creation
+
 
 #    def encode_small_tuple(self, data):
 #        pass

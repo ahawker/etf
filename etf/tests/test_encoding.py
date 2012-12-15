@@ -164,17 +164,35 @@ class TestEncoder(unittest.TestCase):
         tag = term[0]
         self.assertEqual(tag, tags.LIST)
 
-    def test_new_reference_one_id(self):
+    def test_reference_valid(self):
         ref = terms.Reference(terms.Atom(True), 0, 0)
         term = self.encoder.encode_reference(ref)
+        tag = term[0]
+        self.assertEqual(tag, tags.REFERENCE)
+
+    def test_new_reference_one_id(self):
+        ref = terms.NewReference(terms.Atom(True), 0, 0)
+        term = self.encoder.encode_new_reference(ref)
         tag = term[0]
         self.assertEqual(tag, tags.NEW_REFERENCE)
 
     def test_new_reference_many_ids(self):
-        ref = terms.Reference(terms.Atom(True), 0, *((0,) * 4096))
-        term = self.encoder.encode_reference(ref)
+        ref = terms.NewReference(terms.Atom(True), 0, *((0,) * 4096))
+        term = self.encoder.encode_new_reference(ref)
         tag = term[0]
         self.assertEqual(tag, tags.NEW_REFERENCE)
+
+    def test_port_valid(self):
+        port = terms.Port(terms.Atom(True), 0, 0)
+        term = self.encoder.encode_port(port)
+        tag = term[0]
+        self.assertEqual(tag, tags.PORT)
+
+    def test_pid_valid(self):
+        pid = terms.Pid(terms.Atom(True), 0, 0, 0)
+        term = self.encoder.encode_pid(pid)
+        tag = term[0]
+        self.assertEqual(tag, tags.PID)
 
 if __name__ == '__main__':
     unittest.main()
