@@ -1,10 +1,10 @@
+import array
 import functools
 import format
 import itertools
 import struct
 import tags
 import terms
-import uuid
 import zlib
 
 __author__ = 'ahawker'
@@ -132,8 +132,23 @@ class ETFEncoder(object):
 #        pass
 
     @types(long)
-    def encode_big(self, data):#small/big
-        pass
+    def encode_big(self, big):
+        def to_byte_string(big):
+            bytes = array.array('B')
+            while big > 0:
+                bytes.append(big & 0xFF)
+                big >>= 8
+            return bytes.tostring()
+        sign = struct.pack(format.INT8, (big < 0))
+        big = to_byte_string(abs(big))
+        length = len(big)
+        if 0 <= length <= 255:
+            tag = tags.SMALL_BIG
+            length = struct.pack(format.INT8, length)
+        else:
+            tag = tags.LARGE_BIG
+            length = struct.pack(format.UINT32, length)
+        return tag, length, sign, big
 
     @types(terms.NewReference)
     def encode_new_reference(self, ref):

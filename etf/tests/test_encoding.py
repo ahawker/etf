@@ -291,18 +291,8 @@ class TestEncoder(unittest.TestCase):
         self.assertEqual(tag, tags.FUN)
 
     def test_new_fun_valid(self):
-        x = uuid.uuid4().int
-        y = uuid.UUID(int=x).bytes
-        #print chr(y[0])
-       # print ord(y[0])
-        print x
-        print y
-
-        def f(*v):
-            print v
-        f(*y)
-        size = 0 #???
-        arity = 0 #???
+        size = 0
+        arity = 0
         uniq = uuid.uuid4().int
         index = 0
         module = terms.Atom('Module')
@@ -314,6 +304,90 @@ class TestEncoder(unittest.TestCase):
         term = self.encoder.encode_new_fun(fun)
         tag = term[0]
         self.assertEqual(tag, tags.NEW_FUN)
+
+    def test_small_big_positive_byte(self):
+        term = self.encoder.encode_big(long(2**8-1))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.SMALL_BIG)
+        self.assertEqual(sign, 0)
+
+    def test_small_big_negative_byte(self):
+        term = self.encoder.encode_big(long(-2**8-1))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.SMALL_BIG)
+        self.assertEqual(sign, 1)
+
+    def test_small_big_positive_short(self):
+        term = self.encoder.encode_big(long(2**16-1))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.SMALL_BIG)
+        self.assertEqual(sign, 0)
+
+    def test_small_big_negative_short(self):
+        term = self.encoder.encode_big(long(-2**16-1))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.SMALL_BIG)
+        self.assertEqual(sign, 1)
+
+    def test_small_big_positive_int(self):
+        term = self.encoder.encode_big(long(2**32-1))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.SMALL_BIG)
+        self.assertEqual(sign, 0)
+
+    def test_small_big_negative_int(self):
+        term = self.encoder.encode_big(long(-2**32-1))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.SMALL_BIG)
+        self.assertEqual(sign, 1)
+
+    def test_small_big_positive_max(self):
+        term = self.encoder.encode_big(long(255**255))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.SMALL_BIG)
+        self.assertEqual(sign, 0)
+
+    def test_small_big_negative_max(self):
+        term = self.encoder.encode_big(long(-255**255))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.SMALL_BIG)
+        self.assertEqual(sign, 1)
+
+    def test_large_big_positive_min(self):
+        term = self.encoder.encode_big(long(256**256))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.LARGE_BIG)
+        self.assertEqual(sign, 0)
+
+    def test_large_big_negative_min(self):
+        term = self.encoder.encode_big(long(-256**256))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.LARGE_BIG)
+        self.assertEqual(sign, 1)
+
+    def test_large_big_positive_very_large(self):
+        term = self.encoder.encode_big(long(1024**10000))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.LARGE_BIG)
+        self.assertEqual(sign, 0)
+
+    def test_large_big_negative_very_small(self):
+        term = self.encoder.encode_big(long(-1024**10000))
+        tag = term[0]
+        sign = ord(term[2])
+        self.assertEqual(tag, tags.LARGE_BIG)
+        self.assertEqual(sign, 1)
 
 
 if __name__ == '__main__':
