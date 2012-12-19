@@ -1,6 +1,7 @@
 from etf import encoding, tags, terms
 import struct
 import unittest
+import uuid
 import zlib
 
 __author__ = 'ahawker'
@@ -280,6 +281,39 @@ class TestEncoder(unittest.TestCase):
         term = self.encoder.encode_export(export)
         tag = term[0]
         self.assertEqual(tag, tags.EXPORT)
+
+    def test_fun_valid(self):
+        pid = terms.Pid(terms.Atom('Pid'), 0, 0, 0)
+        module = terms.Atom('Module')
+        fun = terms.Function(pid, module, 0, 1, terms.Atom('Var1'))
+        term = self.encoder.encode_fun(fun)
+        tag = term[0]
+        self.assertEqual(tag, tags.FUN)
+
+    def test_new_fun_valid(self):
+        x = uuid.uuid4().int
+        y = uuid.UUID(int=x).bytes
+        #print chr(y[0])
+       # print ord(y[0])
+        print x
+        print y
+
+        def f(*v):
+            print v
+        f(*y)
+        size = 0 #???
+        arity = 0 #???
+        uniq = uuid.uuid4().int
+        index = 0
+        module = terms.Atom('Module')
+        oldindex = 0
+        olduniq = 0
+        pid = terms.Pid(terms.Atom('Pid'), 0, 0, 0)
+        vars = (terms.Atom('Var1'), terms.Atom('Var2'))
+        fun = terms.NewFunction(size, arity, uniq, index, module, oldindex, olduniq, pid, vars)
+        term = self.encoder.encode_new_fun(fun)
+        tag = term[0]
+        self.assertEqual(tag, tags.NEW_FUN)
 
 
 if __name__ == '__main__':

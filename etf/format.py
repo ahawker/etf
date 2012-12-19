@@ -7,7 +7,7 @@ INT32    = '>i'
 UINT32   = '>I'
 FLOAT    = '>f'
 DOUBLE   = '>d'
-UINT128  = '>16B'
+UINT128  = '>QQ'
 
 VARIABLE_UINT32  = '>{0:d}I'
 ID_CREATION_PAIR = '>IB'

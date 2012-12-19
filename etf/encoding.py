@@ -4,6 +4,7 @@ import itertools
 import struct
 import tags
 import terms
+import uuid
 import zlib
 
 __author__ = 'ahawker'
@@ -33,15 +34,11 @@ class ETFEncoder(object):
         #flatten type tuple into individual keys
         self.handlers = dict((t, enc) for types, enc in _generate_handlers() for t in types)
 
-    def encode(self, value):
-        pass
+    def encode(self, term):
+        return tags.VERSION + ''.join(self.encode_term(term))
 
     def encode_term(self, term):
-        term = self.handlers[type(term)](term)
-        if len(term) == 1: #NIL only has tag
-            return chr(term[0])
-        tag, term = term
-        return chr(tag), term
+        return self.handlers[type(term)](term)
 
     def encode_compressed_term(self, data):
         pass
@@ -149,11 +146,28 @@ class ETFEncoder(object):
 #    def encode_small_atom(self, data):
 #        pass
 
-    def encode_fun(self, data):
-        pass
+    @types(terms.Function)
+    def encode_fun(self, func):
+        pid = self.encode_pid(func.pid)
+        module = self.encode_atom(func.module)
+        index = self.encode_integer(func.index)
+        uniq = self.encode_integer(func.uniq)
+        vars = self._encode_iterable(func.vars) #???
+        return tags.FUN, pid, module, index, uniq, vars
 
-    def encode_new_fun(self, data):
-        pass
+    @types(terms.NewFunction)
+    def encode_new_fun(self, func):
+        size = struct.pack(format.UINT32, func.size)
+        arity = struct.pack(format.INT8, func.arity)
+        uniq = struct.pack(format.UINT128, (func.uniq >> 64) & (1<<64)-1, func.uniq & (1<<64)-1)
+        index = struct.pack(format.UINT32, func.index)
+        numvars = len(func.vars) #???
+        module = self.encode_atom(func.module)
+        oldindex = self.encode_integer(func.oldindex)
+        olduniq = self.encode_integer(func.olduniq)
+        pid = self.encode_pid(func.pid)
+        vars = self._encode_iterable(func.vars)
+        return tags.NEW_FUN, size, arity, uniq, index, numvars, module, oldindex, olduniq, pid, vars
 
     @types(terms.Export)
     def encode_export(self, export):
@@ -174,7 +188,3 @@ class ETFEncoder(object):
 
     def _encode_iterable(self, iterable):
         return tuple(itertools.chain.from_iterable(map(lambda t: self.encode_term(t), iterable)))
-
-if __name__ == '__main__':
-    e = ETFEncoder()
-    pass

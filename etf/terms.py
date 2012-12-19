@@ -60,6 +60,31 @@ class NewFloat(float):
     def __repr__(self):
         return '<NewFloat({0})>'.format(self)
 
+class Function(object):
+    def __init__(self, pid, module, index, uniq, *vars):
+        self.pid = pid
+        self.module = module
+        self.index = index
+        self.uniq = uniq
+        self.vars = vars
+
+    def __repr__(self):
+        return '<Function({0})>'.format(self)
+    def __str__(self):
+        return '[{0}]: {1}->[{2}]({3})'.format(self.pid, self.module, self.index, self.vars)
+
+class NewFunction(object):
+    def __init__(self, size, arity, uniq, index, module, oldindex, olduniq, pid, *vars):
+        self.size = size
+        self.arity = arity
+        self.uniq = uniq
+        self.index = index
+        self.module = module
+        self.oldindex = oldindex
+        self.olduniq = olduniq
+        self.pid = pid
+        self.vars = vars
+
 class Port(object):
     def __init__(self, node, id, creation):
         self.node = node
