@@ -17,6 +17,18 @@ class TestEncoder(unittest.TestCase):
     def test_correct_version(self):
         pass
 
+    def test_compress_too_small_term(self):
+        term = self.encoder.encode_term(0)
+        cterm = self.encoder.compress_term(term)
+        tag = cterm[0]
+        self.assertNotEqual(tag, tags.COMPRESSED)
+
+    def test_compress_large_term(self):
+        term = self.encoder.encode_term([1] * 4096)
+        cterm = self.encoder.compress_term(term)
+        tag = cterm[0]
+        self.assertEqual(tag, tags.COMPRESSED)
+
     def test_small_integer_too_low(self):
         term = self.encoder.encode_integer(-1)
         tag = term[0]

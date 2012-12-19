@@ -34,14 +34,20 @@ class ETFEncoder(object):
         #flatten type tuple into individual keys
         self.handlers = dict((t, enc) for types, enc in _generate_handlers() for t in types)
 
-    def encode(self, term):
-        return tags.VERSION + ''.join(self.encode_term(term))
+    def encode(self, term, compress=False):
+        term = self.encode_term(term)
+        if compress:
+            term = self.compress_term(term)
+        return tags.VERSION + term
 
     def encode_term(self, term):
-        return self.handlers[type(term)](term)
+        return ''.join(self.handlers[type(term)](term))
 
-    def encode_compressed_term(self, data):
-        pass
+    def compress_term(self, term):
+        cterm = zlib.compress(term)
+        if len(cterm) < len(term):
+            return tags.COMPRESSED, struct.pack(format.UINT32, len(term)), cterm
+        return term
 
 #    def encode_small_integer(self, data):
 #        pass
