@@ -15,7 +15,7 @@ def tag(tag):
             pos = args[2]
             if pos < 0:
                 raise ValueError('{0} expects non-negative position'.format(func.__name__))
-            tbyte = struct.unpack(format.INT8, args[1][pos])[0]
+            tbyte = args[1][pos]
             if tag != tbyte:
                 raise ValueError('{0} got tag {1} but expects {2}'.format(func.__name__, tbyte, tag))
             return func(*(args[0], args[1], pos+1), **kwargs)
@@ -36,13 +36,13 @@ class ETFDecoder(object):
         self.handlers = dict(_generate_handlers())
 
     def decode(self, data):
-        version = struct.unpack(format.INT8, data[0])[0]
+        version = data[0]
         if version != tags.VERSION:
             raise ETFDecodingError('Decode got version {0} but expects {1}'.format(version, tags.VERSION))
         return self.decode_term(data, pos=1)
 
     def decode_term(self, data, pos=0):
-        tag = struct.unpack(format.INT8, data[pos])[0]
+        tag = data[pos]
         return self.handlers[tag](data, pos)
 
     @tag(tags.COMPRESSED)
