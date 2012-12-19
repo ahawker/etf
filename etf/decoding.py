@@ -153,7 +153,3 @@ class ETFDecoder(object):
                 data, pos = self.decode_term(data, pos)
                 yield data
         return type(_decoded_term_generator(data, pos, length))
-
-if __name__ == '__main__':
-    d = ETFDecoder()
-    pass
