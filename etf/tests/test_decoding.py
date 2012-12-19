@@ -1,7 +1,8 @@
-from etf import decoding, tags, format
+from etf import decoding, format, tags, terms
 import struct
 import unittest
 import zlib
+import sys
 
 __author__ = 'Andrew Hawker <andrew.r.hawker@gmail.com>'
 
@@ -53,6 +54,21 @@ class TestDecoder(unittest.TestCase):
     def test_compressed_term_valid_data(self):
         #need to encode a term that is large enough to be compressed
         pass
+
+    def test_new_float_wrong_tag(self):
+        data, pos = chr(0), 0
+        self.assertRaises(ValueError, self.decoder.decode_new_float, chr(0) + data, pos)
+
+    def test_new_float_negative_pos(self):
+        data, pos = chr(0), -1
+        self.assertRaises(ValueError, self.decoder.decode_new_float, tags.NEW_FLOAT + data, pos)
+
+    def test_new_float_valid(self):
+        value = 1000.00
+        data, pos = struct.pack(format.DOUBLE, value), 0
+        result = self.decoder.decode_new_float(tags.NEW_FLOAT + data, pos)
+        self.assertEquals(result, value)
+        self.assertTrue(isinstance(result, terms.NewFloat))
 
 if __name__ == '__main__':
     unittest.main()

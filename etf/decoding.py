@@ -145,7 +145,9 @@ class ETFDecoder(object):
 
     @tag(tags.NEW_FLOAT)
     def decode_new_float(self, data, pos):
-        pass
+        offset = pos + 8
+        value = struct.unpack(format.DOUBLE, data[pos:offset])[0]
+        return terms.NewFloat(value)
 
     def _decode_iterable(self, data, pos, length, type):
         def _decoded_term_generator(data, pos, length):
