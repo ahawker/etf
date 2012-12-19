@@ -4,7 +4,7 @@ import unittest
 import uuid
 import zlib
 
-__author__ = 'ahawker'
+__author__ = 'Andrew Hawker <andrew.r.hawker@gmail.com>'
 
 class TestEncoder(unittest.TestCase):
 

@@ -1,7 +1,7 @@
 from etf import terms
 import unittest
 
-__author__ = 'ahawker'
+__author__ = 'Andrew Hawker <andrew.r.hawker@gmail.com>'
 
 class TestAtom(unittest.TestCase):
 

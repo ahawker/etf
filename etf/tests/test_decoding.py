@@ -3,7 +3,7 @@ import struct
 import unittest
 import zlib
 
-__author__ = 'ahawker'
+__author__ = 'Andrew Hawker <andrew.r.hawker@gmail.com>'
 
 class TestDecoder(unittest.TestCase):
 

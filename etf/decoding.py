@@ -5,7 +5,7 @@ import tags
 import terms
 import zlib
 
-__author__ = 'ahawker'
+__author__ = 'Andrew Hawker <andrew.r.hawker@gmail.com>'
 __all__ = ['ETFDecodingError', 'ETFDecoder']
 
 def tag(tag):

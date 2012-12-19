@@ -1,22 +1,21 @@
-__author__ = 'ahawker'
-__version__ = "0.0.1"
+__author__ = 'Andrew Hawker <andrew.r.hawker@gmail.com>'
+__version__ = '0.0.1'
+__all__ = ['ETFEncoder', 'ETFDecoder', 'load', 'loads', 'dump', 'dumps']
 
-from etf.encoding import ETFEncoder
-from etf.decoding import ETFDecoder
+from .encoding import ETFEncoder
+from .decoding import ETFDecoder
 
 encode = ETFEncoder().encode
 decode = ETFDecoder().decode
 
-VERSION = 131
+def load(fp):
+    return loads(fp.read())
 
-def load():
-    pass
+def loads(s):
+    return decode(s)
 
-def loads():
-    pass
+def dump(obj, fp):
+    fp.write(dumps(obj))
 
-def dump():
-    pass
-
-def dumps():
-    pass
+def dumps(obj, compress=False):
+    return encode(obj, compress)

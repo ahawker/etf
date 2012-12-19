@@ -1,4 +1,4 @@
-__author__ = 'ahawker'
+__author__ = 'Andrew Hawker <andrew.r.hawker@gmail.com>'
 
 NEW_FLOAT     = chr(70)
 BIT_BINARY    = chr(77)
