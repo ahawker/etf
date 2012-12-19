@@ -49,9 +49,6 @@ class ETFEncoder(object):
             return tags.COMPRESSED, struct.pack(format.UINT32, len(term)), cterm
         return term
 
-#    def encode_small_integer(self, data):
-#        pass
-
     @types(int)
     def encode_integer(self, value):
         if 0 <= value <= 255:
@@ -92,13 +89,6 @@ class ETFEncoder(object):
         creation = struct.pack(format.INT8, pid.creation)
         return tags.PID, node, id, serial, creation
 
-
-#    def encode_small_tuple(self, data):
-#        pass
-#
-#    def encode_large_tuple(self, data):
-#        pass
-
     @types(tuple)
     def encode_tuple(self, tup):
         arity = len(tup)
@@ -109,9 +99,6 @@ class ETFEncoder(object):
             tag = tags.LARGE_TUPLE
             arity = struct.pack(format.UINT32, arity)
         return (tag, arity) + self._encode_iterable(tup)
-
-#    def encode_nil(self, data):
-#        pass
 
     @types(unicode, terms.String)
     def encode_string(self, string):
@@ -130,12 +117,6 @@ class ETFEncoder(object):
     @types(str, terms.Binary)
     def encode_binary(self, binary):
         return tags.BINARY, struct.pack(format.UINT32, len(binary)), binary
-
-#    def encode_small_big(self, data):
-#        pass
-#
-#    def encode_large_big(self, data):
-#        pass
 
     @types(long)
     def encode_big(self, big):
@@ -163,9 +144,6 @@ class ETFEncoder(object):
         creation = struct.pack(format.INT8, ref.creation)
         ids = struct.pack(format.VARIABLE_UINT32.format(length), *ref.ids)
         return tags.NEW_REFERENCE, length, node, creation, ids
-
-#    def encode_small_atom(self, data):
-#        pass
 
     @types(terms.Function)
     def encode_fun(self, func):
