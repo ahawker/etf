@@ -55,30 +55,31 @@ class ETFDecoder(object):
     @tag(tags.SMALL_INTEGER)
     def decode_small_integer(self, data, pos):
         offset = pos + 1
-        return struct.unpack(format.INT8, data[pos:offset])[0]
+        return struct.unpack(format.INT8, data[pos:offset])[0], offset
 
     @tag(tags.INTEGER)
     def decode_integer(self, data, pos):
         offset = pos + 4
-        return struct.unpack(format.INT32, data[pos:offset])[0]
+        return struct.unpack(format.INT32, data[pos:offset])[0], offset
 
     @tag(tags.FLOAT)
     def decode_float(self, data, pos):
-        offset = pos + 4
-        return struct.unpack(format.FLOAT, data[pos:offset])[0]
+        offset = pos + 31
+        value = data[pos:offset].split('\x00', 1)[0] #ignore padding
+        return terms.Float(value), offset
 
     @tag(tags.ATOM)
     def decode_atom(self, data, pos):
         offset = pos + 2
         length = struct.unpack(format.UINT16, data[pos:offset])[0]
-        return terms.Atom(data[offset:offset+length])
+        return terms.Atom(data[offset:offset+length]), offset
 
     @tag(tags.REFERENCE)
     def decode_reference(self, data, pos):
         node, pos = self.decode_term(data, pos) #???
         offset = pos + 5
         id, creation = struct.unpack(format.ID_CREATION_PAIR, data[pos:offset])
-        return terms.Reference(node, id, creation)
+        return terms.Reference(node, id, creation), offset
 
     @tag(tags.SMALL_TUPLE)
     def decode_small_tuple(self, data, pos):
@@ -137,7 +138,10 @@ class ETFDecoder(object):
 
     @tag(tags.EXPORT)
     def decode_export(self, data, pos):
-        pass
+        module, pos = self.decode_atom(data, pos)
+        function, pos = self.decode_atom(data, pos)
+        arity, pos = self.decode_small_integer(data, pos)
+        return terms.Export(module, function, arity), pos
 
     @tag(tags.BIT_BINARY)
     def decode_bit_binary(self, data, pos):
@@ -147,7 +151,7 @@ class ETFDecoder(object):
     def decode_new_float(self, data, pos):
         offset = pos + 8
         value = struct.unpack(format.DOUBLE, data[pos:offset])[0]
-        return terms.NewFloat(value)
+        return terms.NewFloat(value), offset
 
     def _decode_iterable(self, data, pos, length, type):
         def _decoded_term_generator(data, pos, length):
